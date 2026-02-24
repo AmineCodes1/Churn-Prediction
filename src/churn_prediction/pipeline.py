@@ -13,6 +13,7 @@ from .data import (
 )
 from .evaluation import evaluate_probabilities, optimize_threshold_for_recall
 from .evaluation import build_calibration_table, cross_validate_pipeline, evaluate_probability_quality
+from .explainability import generate_shap_artifacts
 from .features import build_preprocessor, detect_feature_types
 from .modeling import build_model_candidates, build_model_pipeline
 
@@ -84,6 +85,22 @@ def run_training_pipeline(data_file: str) -> dict[str, object]:
         targeting_ratio=business_config.targeting_ratio,
     )
 
+    explainability_artifacts: dict[str, object]
+    try:
+        explainability_artifacts = generate_shap_artifacts(
+            pipeline=best_pipeline,
+            x_train=x_train,
+            x_valid=x_valid,
+            output_dir=paths.reports / "figures",
+            model_name=best_model_name,
+            random_state=model_config.random_state,
+        )
+    except Exception as exc:
+        explainability_artifacts = {
+            "error": f"Explainability artifact generation failed: {exc}",
+            "top_features": [],
+        }
+
     paths.models.mkdir(parents=True, exist_ok=True)
     model_path = paths.models / f"{best_model_name}_pipeline.joblib"
     joblib.dump(best_pipeline, model_path)
@@ -101,5 +118,6 @@ def run_training_pipeline(data_file: str) -> dict[str, object]:
             "calibration_table": calibration_table,
         },
         "business_impact": business_impact,
+        "explainability": explainability_artifacts,
         "saved_model_path": str(model_path),
     }
