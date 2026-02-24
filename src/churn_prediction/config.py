@@ -23,3 +23,4 @@ class ModelConfig:
     target_column: str = "churn"
     random_state: int = 42
     test_size: float = 0.20
+    cv_folds: int = 5

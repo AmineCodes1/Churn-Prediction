@@ -28,7 +28,21 @@
   - Logistic Regression
   - Random Forest
   - XGBoost
-- Validation strategy: **Stratified train/validation split (80/20), random state = 42**
+- Validation strategy: **Stratified train/validation split (80/20), random state = 42, plus stratified 5-fold CV on training split**
+
+## 3.1 Robustness Checks
+- Cross-validation stability (best model):
+  - CV ROC-AUC mean ± std: **0.843 ± 0.011**
+  - CV PR-AUC mean ± std: **0.663 ± 0.021**
+  - CV Precision mean ± std: **0.661 ± 0.034**
+  - CV Recall mean ± std: **0.526 ± 0.021**
+  - CV F1 mean ± std: **0.586 ± 0.020**
+- Probability quality on holdout:
+  - PR-AUC: **0.652**
+  - Brier score: **0.137**
+  - Log loss: **0.422**
+- Calibration diagnostics:
+  - The model is reasonably calibrated in low-risk bins (0.0–0.1 predicted: 0.033 vs 0.040 observed) and high-risk bins (0.7–0.8 predicted: 0.742 vs 0.787 observed), with some underestimation around the 0.1–0.2 bin (0.148 predicted vs 0.207 observed).
 
 ## 4. Performance Results
 | Model | ROC-AUC | Precision | Recall | F1 |
