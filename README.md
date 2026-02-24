@@ -20,8 +20,8 @@ ChurnPredictionProject/
 │   └── external/
 ├── models/
 ├── notebooks/
-│   ├── 01_eda_and_modeling_template.ipynb
-│   └── 02_churn_end_to_end_starter.ipynb
+│   ├── 01_churn_end_to_end_starter.ipynb
+│   
 ├── reports/
 │   ├── RESULTS_REPORT_TEMPLATE.md
 │   └── figures/
