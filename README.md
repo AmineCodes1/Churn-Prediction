@@ -106,7 +106,4 @@ Open `notebooks/01_churn_end_to_end_starter.ipynb` to reproduce:
 5. Interview-ready interpretation
 6. SHAP explainability artifact and actionable insights
 
-## Notes
 
-- SHAP summary images are generated at runtime into `reports/figures/`.
-- `models/` and `reports/figures/` are artifact directories and may be gitignored except placeholders.
