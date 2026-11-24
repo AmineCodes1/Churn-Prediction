@@ -13,6 +13,9 @@ data/processed/*
 !data/processed/.gitkeep
 models/*
 !models/.gitkeep
+mlruns/
+mlflow.db
+mlartifacts/
 reports/figures/*
 !reports/figures/.gitkeep
 .DS_Store

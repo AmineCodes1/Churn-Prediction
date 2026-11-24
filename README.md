@@ -55,6 +55,7 @@ ChurnPredictionProject/
 ## What Is Implemented
 
 - Reusable training pipeline with preprocessing + model selection.
+- Numeric-looking text columns are converted to numeric values during loading; blank values are imputed by the preprocessing pipeline.
 - Model benchmarking (Logistic Regression, Random Forest, XGBoost when available).
 - Threshold optimization for business trade-offs (precision-constrained recall).
 - Business impact simulation (cost, saved revenue, net benefit).
@@ -66,6 +67,7 @@ ChurnPredictionProject/
     - SHAP summary plot (generated in `reports/figures/`).
     - Top SHAP features with actionable direction insights.
 - Streamlit app for single-customer and batch scoring.
+- MLflow experiment tracking for parameters, metrics, evaluation JSON, explainability artifacts, and the fitted model.
 
 ## Quick Start
 
@@ -94,6 +96,25 @@ python scripts/run_business_simulation.py --data customer_churn.csv
 ```bash
 python -m streamlit run app.py
 ```
+
+## MLflow Tracking
+
+Training logs to a local SQLite database (`mlflow.db`) by default. Start the MLflow UI in a
+second terminal:
+
+```bash
+mlflow ui --backend-store-uri sqlite:///mlflow.db
+```
+
+Then train as usual:
+
+```bash
+python scripts/train_model.py --data customer_churn.csv --experiment-name churn-prediction
+```
+
+Use `--tracking-uri` for a remote MLflow server, or `--no-mlflow` when tracking
+is intentionally unavailable. The training command prints the MLflow run ID
+alongside the saved model path.
 
 ## Notebook Walkthrough
 

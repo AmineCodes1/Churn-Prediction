@@ -16,9 +16,17 @@ from .evaluation import build_calibration_table, cross_validate_pipeline, evalua
 from .explainability import generate_shap_artifacts
 from .features import build_preprocessor, detect_feature_types
 from .modeling import build_model_candidates, build_model_pipeline
+from .tracking import log_training_run
 
 
-def run_training_pipeline(data_file: str) -> dict[str, object]:
+def run_training_pipeline(
+    data_file: str,
+    *,
+    tracking_uri: str | None = None,
+    experiment_name: str | None = None,
+    run_name: str | None = None,
+    enable_mlflow: bool = True,
+) -> dict[str, object]:
     paths = PathsConfig()
     model_config = ModelConfig()
     business_config = BusinessConfig()
@@ -95,7 +103,7 @@ def run_training_pipeline(data_file: str) -> dict[str, object]:
             model_name=best_model_name,
             random_state=model_config.random_state,
         )
-    except Exception as exc:
+    except (ImportError, AttributeError, RuntimeError, ValueError) as exc:
         explainability_artifacts = {
             "error": f"Explainability artifact generation failed: {exc}",
             "top_features": [],
@@ -105,7 +113,7 @@ def run_training_pipeline(data_file: str) -> dict[str, object]:
     model_path = paths.models / f"{best_model_name}_pipeline.joblib"
     joblib.dump(best_pipeline, model_path)
 
-    return {
+    results: dict[str, object] = {
         "best_model": best_model_name,
         "benchmark_results": benchmark_results,
         "optimal_threshold": optimal_threshold,
@@ -121,3 +129,34 @@ def run_training_pipeline(data_file: str) -> dict[str, object]:
         "explainability": explainability_artifacts,
         "saved_model_path": str(model_path),
     }
+
+    if enable_mlflow:
+        results["mlflow"] = log_training_run(
+            tracking_uri=tracking_uri,
+            tracking_dir=paths.mlflow_tracking,
+            experiment_name=experiment_name,
+            run_name=run_name,
+            data_path=data_path,
+            data_shape=df.shape,
+            target_column=target_column,
+            model_config={
+                "random_state": model_config.random_state,
+                "test_size": model_config.test_size,
+                "cv_folds": model_config.cv_folds,
+            },
+            business_config={
+                "retention_cost": business_config.retention_cost,
+                "average_clv": business_config.average_clv,
+                "targeting_ratio": business_config.targeting_ratio,
+            },
+            benchmark_results=benchmark_results,
+            best_model_name=best_model_name,
+            best_pipeline=best_pipeline,
+            model_path=model_path,
+            evaluation=results["robust_evaluation"],
+            business_impact=business_impact,
+            explainability=explainability_artifacts,
+            x_train=x_train,
+        )
+
+    return results

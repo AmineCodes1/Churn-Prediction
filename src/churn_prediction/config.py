@@ -9,6 +9,7 @@ class PathsConfig:
     data_processed: Path = project_root / "data" / "processed"
     models: Path = project_root / "models"
     reports: Path = project_root / "reports"
+    mlflow_tracking: Path = project_root / "mlruns"
 
 
 @dataclass(frozen=True)

@@ -5,7 +5,20 @@ from sklearn.model_selection import train_test_split
 
 
 def load_dataset(csv_path: Path) -> pd.DataFrame:
-    return pd.read_csv(csv_path)
+    df = pd.read_csv(csv_path)
+    text_columns = df.select_dtypes(include=["object", "string"]).columns
+
+    for column in text_columns:
+        values = df[column].astype("string").str.strip()
+        nonempty = values.notna() & values.ne("")
+        if not nonempty.any():
+            continue
+
+        numeric_values = pd.to_numeric(values, errors="coerce")
+        if numeric_values[nonempty].notna().mean() >= 0.9:
+            df[column] = numeric_values
+
+    return df
 
 
 def split_features_target(df: pd.DataFrame, target_column: str) -> tuple[pd.DataFrame, pd.Series]:
