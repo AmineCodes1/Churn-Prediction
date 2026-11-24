@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Customer churn prediction and revenue impact optimization"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = ["mlflow>=2.10.0"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

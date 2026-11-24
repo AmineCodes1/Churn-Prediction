@@ -3,7 +3,7 @@
 ## Executive Summary
 - **Business Problem:** Predict customers likely to churn and optimize targeted retention actions.
 - **Model Outcome:** Best model achieved **ROC-AUC = 0.842** on holdout data.
-- **Business Outcome:** Estimated **net benefit = $136,350** for the evaluated holdout cohort (**1,409 customers**) under targeted retention policy.
+- **Business Outcome:** Estimated **net benefit = $137,150** for the evaluated holdout cohort (**1,409 customers**) under targeted retention policy.
 - **Recommendation:** Target top **20%** high-risk customers using threshold **0.10** for high-recall capture.
 
 ## 1. Problem Framing
@@ -18,7 +18,7 @@
 - Number of rows: **7,043**
 - Number of features: **20** (excluding target)
 - Churn rate: **26.54%**
-- Missing data approach: **Median imputation (numeric) and most-frequent imputation (categorical) in pipeline**
+- Missing data approach: Numeric-looking text columns are converted to numeric during loading; the 11 blank `TotalCharges` values are median-imputed in the numeric preprocessing pipeline. Categorical missing values use most-frequent imputation.
 
 ## 3. Modeling Approach
 - Preprocessing:
@@ -32,32 +32,32 @@
 
 ## 3.1 Robustness Checks
 - Cross-validation stability (best model):
-  - CV ROC-AUC mean ± std: **0.843 ± 0.011**
-  - CV PR-AUC mean ± std: **0.663 ± 0.021**
-  - CV Precision mean ± std: **0.661 ± 0.034**
-  - CV Recall mean ± std: **0.526 ± 0.021**
-  - CV F1 mean ± std: **0.586 ± 0.020**
+  - CV ROC-AUC mean ± std: **0.844 ± 0.009**
+  - CV PR-AUC mean ± std: **0.664 ± 0.018**
+  - CV Precision mean ± std: **0.663 ± 0.038**
+  - CV Recall mean ± std: **0.530 ± 0.032**
+  - CV F1 mean ± std: **0.589 ± 0.032**
 - Probability quality on holdout:
-  - PR-AUC: **0.652**
+  - PR-AUC: **0.657**
   - Brier score: **0.137**
-  - Log loss: **0.422**
+  - Log loss: **0.421**
 - Calibration diagnostics:
-  - The model is reasonably calibrated in low-risk bins (0.0–0.1 predicted: 0.033 vs 0.040 observed) and high-risk bins (0.7–0.8 predicted: 0.742 vs 0.787 observed), with some underestimation around the 0.1–0.2 bin (0.148 predicted vs 0.207 observed).
+  - The model is reasonably calibrated in low-risk bins (0.0–0.1 predicted: 0.032 vs 0.043 observed) and high-risk bins (0.7–0.8 predicted: 0.739 vs 0.763 observed), with some underestimation around the 0.1–0.2 bin (0.144 predicted vs 0.185 observed).
 
 ## 4. Performance Results
 | Model | ROC-AUC | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|
-| Logistic Regression | 0.840 | 0.536 | 0.719 | 0.614 |
-| Random Forest | 0.826 | 0.622 | 0.545 | 0.581 |
-| XGBoost | 0.842 | 0.655 | 0.519 | 0.579 |
+| Logistic Regression | 0.841 | 0.524 | 0.754 | 0.618 |
+| Random Forest | 0.830 | 0.546 | 0.652 | 0.594 |
+| XGBoost | 0.842 | 0.662 | 0.508 | 0.575 |
 
 ### Threshold Optimization
 - Selected threshold: **0.10**
 - Reason: maximize recall while keeping precision above **0.30** (business rule in pipeline).
 - Tuned metrics at threshold **0.10**:
-  - Precision: **0.418**
-  - Recall: **0.939**
-  - F1: **0.578**
+  - Precision: **0.410**
+  - Recall: **0.936**
+  - F1: **0.570**
 
 ## 5. Interpretability Insights
 ### Top Churn Drivers
@@ -87,8 +87,8 @@ Formulas:
 | Metric | Value |
 |---|---:|
 | Number Targeted | 281 |
-| Correctly Predicted Churners | 188 |
+| Correctly Predicted Churners | 189 |
 | Retention Cost Total | $14,050 |
-| Revenue Saved | $150,400 |
-| Net Benefit | $136,350 |
+| Revenue Saved | $151,200 |
+| Net Benefit | $137,150 |
 
